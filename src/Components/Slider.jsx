@@ -5,18 +5,18 @@ const Slider = () => {
   const [next, setNext] = useState(0);
 
   const handleNext = () => {
-    setNext(() => next + 1);
+    setNext((prev) => (prev === data.length - 1 ? 0 : prev + 1));
   };
 
   const handlePrev = () => {
-    setNext(() => next - 1);
+    setNext((prev) => (prev === 0 ? data.length - 1 : prev - 1));
   };
 
   return (
     <div className="slider-container">
       <div className="slider-wrapper">
         <img
-          src={data[next].download_url}
+          src={data[next]?.download_url}
           alt="slider"
           className="slider-image"
         />
