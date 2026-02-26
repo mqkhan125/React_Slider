@@ -1,58 +1,62 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import data from "./JsonData.json";
 
 const Slider = () => {
-  const [next, setNext] = useState(0);
+  const [index, setIndex] = useState(0);
   const intervalRef = useRef(null);
 
-  // start autoplay
-  const startSlider = () => {
-    intervalRef.current = setInterval(() => {
-      setNext((prev) => (prev === data.length - 1 ? 0 : prev + 1));
-    },2000);
+  // next slide
+  const nextSlide = () => {
+    setIndex((prev) => (prev === data.length - 1 ? 0 : prev + 1));
   };
 
-  // stop autoplay
-  const stopSlider = () => {
-    clearInterval(intervalRef.current)
-  }
-
-  const handleNext = () => {
-    setNext((prev) => (prev === data.length - 1 ? 0 : prev + 1));
+  // prev slide
+  const prevSlide = () => {
+    setIndex((prev) => (prev === 0 ? data.length - 1 : prev - 1));
   };
 
-  const handlePrev = () => {
-    setNext((prev) => (prev === 0 ? data.length - 1 : prev - 1));
+  // autoplay start
+  const startAuto = () => {
+    intervalRef.current = setInterval(nextSlide, 2000);
+  };
+
+  // autoplay stop
+  const stopAuto = () => {
+    clearInterval(intervalRef.current);
   };
 
   useEffect(() => {
-    startSlider();
-    return(() => {
-        clearInterval(intervalRef.current)
-    })
+    startAuto();
+    return () => stopAuto();
   }, []);
 
   return (
     <div
       className="slider-container"
-      onMouseEnter={stopSlider}
-      onMouseLeave={startSlider}
+      onMouseEnter={stopAuto}
+      onMouseLeave={startAuto}
     >
-      <div className="slider-wrapper">
-        <img
-          src={data[next]?.download_url}
-          alt="slider"
-          className="slider-image"
-        />
-
-        <button className="slider-btn prev" onClick={handlePrev}>
-          &#10094;
-        </button>
-
-        <button className="slider-btn next" onClick={handleNext}>
-          &#10095;
-        </button>
+      <div
+        className="slider-track"
+        style={{ transform: `translateX(-${index * 100}%)` }}
+      >
+        {data.map((item) => (
+          <img
+            key={item.id}
+            src={item.download_url}
+            alt="slide"
+            className="slide"
+          />
+        ))}
       </div>
+
+      <button className="slider-btn prev" onClick={prevSlide}>
+        &#10094;
+      </button>
+
+      <button className="slider-btn next" onClick={nextSlide}>
+        &#10095;
+      </button>
     </div>
   );
 };
